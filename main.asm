@@ -34,3 +34,13 @@ DOMESTIC_NAME:          DC.B            'SEGA CD LOADER'
 DISK_ID:                DC.B            'GM XX-XXXX-XX              '
 IO:                     DC.B            'J                          '
 REGION:                 DC.B            'JUE                        '
+
+
+;--------------------------------------------------------
+;                   SUB CPU COUROUTINE
+;--------------------------------------------------------
+
+ALIGN                   $1000
+INCLUDE                 "BIOS.asm"
+ALIGN                   $8000
+
