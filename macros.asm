@@ -42,3 +42,29 @@ ENDM
 BIOS_DRV_INIT       MACRO
 CD_BIOS             #DRVINIT
 ENDM
+
+;; ADVERSLY, DETERMINE WHEN THE DISK DRIVE IS OPEN
+
+BIOS_DRV_OPEN           MACRO
+CD_BIOS                 #DRVOPEN
+ENDM
+
+;--------------------------------------------------------
+;       THE FOLLOWING DEFINES ARE IN RELATION TO THE
+;               SUB-ROUTINE OF THE SUB CPU.
+;--------------------------------------------------------
+;   TO HANDLE CASES SUCH AS RAM ALLOCATION, MEMORY,
+;           INTERRUPTS AND ACCESS MODES
+;--------------------------------------------------------
+
+SUB_CPU_DEFINES:
+
+SUB_RTS             EQU         $4E75
+SUB_RTE             EQU         $4E73
+SUB_JMP             EQU         $4EF9
+
+SUB_GET_WORD        EQU         $01
+SUB_GET_FILE_ID     EQU         $02
+SUB_LOAD_FILE_NAME  EQU         $03
+SUB_LOAD_DLL_NAME   EQU         $04
+SUB_PLAY_CDDA       EQU         $05
