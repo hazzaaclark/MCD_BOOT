@@ -10,10 +10,13 @@
 ;    OF MACROS IN RELATION TO THE BIOS DIRECTIVES
 ;--------------------------------------------------------
 
-
 ;--------------------------------------------------------
 INCLUDE         "BIOS_inc.asm"
 ;--------------------------------------------------------
+
+MACRO           ALIGN
+NOP             0, \1
+ENDM
 
 ;; INITALISE THE BIOS BASED ON THE DIRECTIVE VALUE
 ;; MOVE ALL CORRESPONDING BOOT INFORMATION INTO D0
@@ -48,6 +51,73 @@ ENDM
 BIOS_DRV_OPEN           MACRO
 CD_BIOS                 #DRVOPEN
 ENDM
+
+;; MUSIC MACROS - ENABLES THE CDDA SUPPORT
+
+BIOS_MUSIC_STOP         MACRO
+CD_BIOS                 #MSCSTOP
+ENDM
+
+
+BIOS_MUSIC_PLAY         MACRO
+CD_BIOS                 #MSCPLAY
+ENDM
+
+
+BIOS_MUSIC_PLAY1        MACRO
+CD_BIOS                 #MSCPLAY1
+ENDM
+
+BIOS_MUSIC_PLAYER       MACRO
+CD_BIOS                 #MSCPLAYR
+#ENDM
+
+
+BIOS_MUSIC_PLAYER_TIME  MACRO
+CD_BIOS                 #MSCPLAYT
+ENDM
+
+
+BIOS_MUSIC_SEEK         MACRO
+CD_BIOS                 #MSCSEEK
+ENDM
+
+
+BIOS_MUSIC_SEEK_ONCE    MACRO
+CD_BIOS                 #MSCSEEK1
+ENDM
+
+
+BIOS_MUSIC_SEEK_TIMER   MACRO
+CD_BIOS                 #MSCSEEKT
+ENDM
+
+
+BIOS_MUSIC_PAUSE_ON      MACRO
+CD_BIOS                  #MSCPAUSEON
+ENDM
+
+
+BIOS_MUSIC_PAUSE_OFF     MACRO
+CD_BIOS                  #MSCPAUSEOFF
+ENDM
+
+
+BIOS_MUSIC_SCANFF       MACRO
+CD_BIOS                 #MSCSCANFF
+ENDM
+
+
+BIOS_MUSIC_SCANBW       MACRO
+CD_BIOS                 #MSCSCANFR
+ENDM
+
+
+BIOS_MUSIC_SCAN_OFF     MACRO
+CD_BIOS_INIT            #MSCSCANOFF
+ENDM
+
+
 
 ;--------------------------------------------------------
 ;       THE FOLLOWING DEFINES ARE IN RELATION TO THE
