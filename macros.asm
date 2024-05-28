@@ -153,6 +153,71 @@ BIOS_ROM_PAUSE_OFF      MACRO
 CD_BIOS                 #ROMPAUSEOFF
 
 ;--------------------------------------------------------
+;       THE FOLLOWING DEFINES ARE IN RELATION TO
+;       GENERAL PURPOSE BIOS FUNCTIONS AND CHECKS
+;--------------------------------------------------------
+
+BIOS_SEEK_QUERY         MACRO
+CD_BIOS                 #CDBCHK
+ENDM
+
+BIOS_STATUS_TABLE       MACRO
+CD_BIOS                 #CDBSTAT
+ENDM
+
+BIOS_TRACK_READ         MACRO
+CD_BIOS                 #CDBTOCREAD
+ENDM
+
+BIOS_TRACK_WRITE        MACRO
+CD_BIOS                 #CDBTOCWRITE
+ENDM
+
+BIOS_TRACK_PAUSE        MACRO
+CD_BIOS                 #CDBPAUSE
+ENDM
+
+BIOS_SET_VOLUME         MACRO
+CD_BIOS                 #FDRSET
+ENDM
+
+BIOS_RAMP_VOLUME        MACRO
+CD_BIOS                 #FDRCHG
+
+;--------------------------------------------------------
+;       THE FOLLOWING DEFINES ARE IN RELATION TO
+;                 THE BIOS' CDC BUFFER
+;--------------------------------------------------------
+
+BIOS_CDC_START          MACRO
+CD_BIOS                 #CDCSTART
+ENDM
+
+BIOS_CDC_STOP           MACRO
+CD_BIOS                 #CDCSTOP
+ENDM
+
+BIOS_CDC_STATUS         MACRO
+CD_BIOS                 #CDCSTAT
+ENDM
+
+BIOS_CDC_READ           MACRO
+CD_BIOS                 #CDCREAD
+ENDM
+
+BIOS_CDC_WRITE          MACRO
+CD_BIOS                 #CDCTRN
+ENDM
+
+BIOS_CDC_CALLBACK       MACRO
+CD_BIOS                 #CDCACK
+ENDM
+
+BIOS_CDC_MODE_SET       MACRO
+CD_BIOS                 #CDCSETMODE
+ENDM
+
+;--------------------------------------------------------
 ;       THE FOLLOWING DEFINES ARE IN RELATION TO THE
 ;               SUB-ROUTINE OF THE SUB CPU.
 ;--------------------------------------------------------
