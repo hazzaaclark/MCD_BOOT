@@ -30,11 +30,11 @@ GAME_HEADER:
 
 HARDWARE_TYPE:          DC.B            'SEGA MEGA DRIVE    '
 COPYRIGHT:              DC.B            '(C)HARRY CLARK 2024'
-DOMESTIC_NAME:          DC.B            'SEGA CD LOADER'
+DOMESTIC_NAME:          DC.B            'SEGA CD LOADER                                        '
+OVERSEAS_NAME:          DC.B            'SEGA CD LOADER                                        '
 DISK_ID:                DC.B            'GM XX-XXXX-XX              '
 IO:                     DC.B            'J                          '
 REGION:                 DC.B            'JUE                        '
-
 
 ;--------------------------------------------------------
 ;                   SUB CPU COUROUTINE
