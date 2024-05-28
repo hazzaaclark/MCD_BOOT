@@ -18,6 +18,12 @@ MACRO           ALIGN
 NOP             0, \1
 ENDM
 
+;--------------------------------------------------------
+;       THE FOLLOWING DEFINES ARE IN RELATION TO THE
+;              SUB-ROUTINE OF THE CDDA AND
+;             SUBSEQUENT BIOS FUNCTIONALITY
+;--------------------------------------------------------
+
 ;; INITALISE THE BIOS BASED ON THE DIRECTIVE VALUE
 ;; MOVE ALL CORRESPONDING BOOT INFORMATION INTO D0
 ;; AND JUMP SUB ROUTINE TO BIOS BOOT 
@@ -118,6 +124,33 @@ CD_BIOS_INIT            #MSCSCANOFF
 ENDM
 
 
+;--------------------------------------------------------
+;       THE FOLLOWING DEFINES ARE IN RELATION TO THE
+;               SUB-ROUTINE OF THE CD-ROM
+;--------------------------------------------------------
+
+BIOS_ROM_READ           MACRO
+CD_BIOS                 #ROMREAD
+ENDM
+
+BIOS_ROM_READ_SECTOR    MACRO
+CD_BIOS                 #ROMREADN
+ENDM
+
+BIOS_ROM_READ_ENDIAN    MACRO
+CD_BIOS                 #ROMREADE
+ENDM
+
+BIOS_ROM_SEEK           MACRO
+CD_BIOS                 #ROMSEEK
+ENDM
+
+BIOS_ROM_PAUSE_ON       MACRO
+CD_BIOS                 #ROMPAUSEON
+ENDM
+
+BIOS_ROM_PAUSE_OFF      MACRO
+CD_BIOS                 #ROMPAUSEOFF
 
 ;--------------------------------------------------------
 ;       THE FOLLOWING DEFINES ARE IN RELATION TO THE
