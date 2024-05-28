@@ -20,6 +20,7 @@ INCLUDE     "macros.asm"
 
 INIT_SYS            EQU         0
 MD_VER              EQU         0
+SP_SECTOR           DC.L        0
 
 ORG                 EQU         $6000
 
@@ -53,4 +54,10 @@ RTS
 
 INIT_ISO9660:                   
 
-    
+PUSH            D0-D7/A0-A6                 ;; STORE ALL RELEVANT REGISTERS FOR CACHE
+MOVE.L          #$10, D0                    ;; START OFFSET FOR PARSING DISC
+MOVE.L          #$2, D1                     ;; OFFSET SIZE  
+LEA.L           SP_SECTOR, A0               ;; EVALUATE THE START OFFSET AT THE EFFECTIVE ADDRESS
+BSR             READ_CD                     ;; BRANCH OFF TO READ THE CONTENTS OF THE CD, BASED ON THE ABOVE PRE-REQ'S
+
+READ_CD:
