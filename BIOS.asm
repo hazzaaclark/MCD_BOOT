@@ -21,6 +21,7 @@
 INIT_SYS            EQU         0
 MD_VER              EQU         0
 SP_SECTOR           DC.L        0
+SP_ROOT_DIR_BUF     EQU         156
 
 ORG                 EQU         $6000
 
@@ -67,6 +68,29 @@ INIT_ISO9660:
     LEA.L           SP_SECTOR, A0               ;; EVALUATE THE START OFFSET AT THE EFFECTIVE ADDRESS
     BSR             READ_CD                     ;; BRANCH OFF TO READ THE CONTENTS OF THE CD, BASED ON THE ABOVE PRE-REQ'S
 
+    LEA.L           SP_SECTOR, A0               ;; AFETR WHICH, GET THE POINTER OFFSET CURRENTLY AT A0
+    LEA.L           SP_ROOT_DIR_BUF(A0), A1     ;; STORE THE ROOT DIRECTORY RECORD FROM A0 AND LOAD IT INTO A1
+
+    ;; THE FOLLOWING BITSHIFT SECTION SERVES TO
+    ;; PROVIDE LIASSE FOR THE CD DRIVE 
+    ;; -----------------------------------------
+    ;; SUCH THAT IT IS ABLE TO STORE THE CURRENT OFFSET
+    ;; OF THE READER CONCURRENTLY BASD ON WHICH NIBBLE IS REQUIRED (6-9)
+
+
+    MOVE.B          6(A1), D0                   ;; GET THE FIRST PART OF THE SECTOR OFFSET
+    LSL.L           SP_BITSHIFT
+    MOVE.B          7(A1), D0
+    LSL.L           SP_BITSHIFT
+    MOVE.B          8(A1), D0
+    LSL.L           SP_BITSHIFT
+    MOVE.B          9(A), D0
+
+    MOVE.L          #$20, D1                    ;; SIZE OF SECTOR OFFSET
+    BSR             READ_CD
+
+    PUSH            D0-D7/A0-A6
+    RTS
 
 READ_CD:
 
@@ -109,3 +133,7 @@ BIOS_INIT_STDCALL:
 HEADER:
 
     DS.L            32
+
+SP_BITSHIFT:
+    
+    LSL.L           #8, D0
