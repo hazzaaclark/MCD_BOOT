@@ -11,7 +11,7 @@
 ;--------------------------------------------------------
 
 ;--------------------------------------------------------
-    INCLUDE         "BIOS_inc.asm"
+    INCLUDE "BIOS_inc.asm"
 ;--------------------------------------------------------
 
 ALIGN MACRO
@@ -278,4 +278,4 @@ SUB_PROC_RAM_B0                 EQU             SUB_PROC_RAM
 SUB_PROC_RAM_B1                 EQU             SUB_PROC_RAM+$20000
 SUB_PROC_RAM_B2                 EQU             SUB_PROC_RAM+$40000
 SUB_PROC_RAM_B3                 EQU             SUB_PROC_RAM+$60000
-SUB_MEM                         EQU             $ffff8003
+SUB_MEM                         EQU             $FFFF8003
