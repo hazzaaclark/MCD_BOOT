@@ -23,7 +23,7 @@ MD_VER              EQU         0
 SP_SECTOR           DC.L        0
 SP_ROOT_DIR_BUF     EQU         156
 
-ORG                 EQU         $6000
+ORG                 $00FF0000-$200
 
 SUB_HEADER:
 
