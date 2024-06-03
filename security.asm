@@ -22,12 +22,10 @@
 ;   BEFORE BOOTING INTO THE DESIGNATED REGION
 ;--------------------------------------------------------
 
-
 SECURITY_SEC:
 
-    INCBIN  "security\jap.bin"
-    ;   INCBIN  "security\usa.bin"
-    ;   INCBIN  "security\eur.bin"
+    incbin  "security\jap.bin"
+    incbin "security\eur.bin"
 
     BRA     INIT_PROG
     ALIGN   $600            ;; MATCHES THE REGION AFTER COMPILE TIME
@@ -49,6 +47,22 @@ INIT_PROG:
 INIT_SUB:
     TST.B       $A1200F             
     BNE         INIT_SUB
+    MOVE.B      #00, $A1200
+
+@WAITRESP:
+    TST.B       $A1200F
+    BEQ         @WAITRESP
+    MOVE.B      D0, $A1200E
+
+ASYNC_SUB: 
+    TST.B       $A1200F
+    BNE         ASYNC_SUB
     MOVE.B      #00, $A1200E
+
+@WAITREADY:
+    TST.B       $A1200F
+    BEQ         @WAITREADY
+    MOVE.B      D0, $A1200E
+    RTS
 
 
