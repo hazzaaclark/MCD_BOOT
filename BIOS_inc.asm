@@ -21,8 +21,6 @@
 ;       BETWEEN CPU'S (SUCH IS THE CASE WITH MCD)
 ;--------------------------------------------------------
 
-BIOS_DIRECTIVES:
-
 MSCSTOP           EQU   $0002
 MSCPAUSEON        EQU   $0003
 MSCPAUSEOFF       EQU   $0004
@@ -91,7 +89,9 @@ BRMFORMAT         EQU   $0006
 BRMDIR            EQU   $0007
 BRMVERIFY         EQU   $0008
 
-BIOS_ENTRY:
+;-----------------------------------------------------------------------
+; BIOS ENTRY POINTS
+;-----------------------------------------------------------------------
 
 _ADRERR           EQU   $00005F40
 _BOOTSTAT         EQU   $00005EA0
@@ -131,8 +131,9 @@ _TRAP13           EQU   $00005FEE
 _TRAP14           EQU   $00005FF4
 _TRAP15           EQU   $00005FFA
 _TRPERR           EQU   $00005F58
-_USERCALL0        EQU   $00005F28 
-_USERCALL1        EQU   $00005F2E 
-_USERCALL2        EQU   $00005F34 
+_USERCALL0        EQU   $00005F28 ;INIT
+_USERCALL1        EQU   $00005F2E ;MAIN
+_USERCALL2        EQU   $00005F34 ;VINT
+_USERCALL3        EQU   $00005F3A ;NOT DEFINED
 _USERMODE         EQU   $00005EA6
 _WAITVSYNC        EQU   $00005F10
