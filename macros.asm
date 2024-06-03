@@ -11,7 +11,7 @@
 ;--------------------------------------------------------
 
 ;--------------------------------------------------------
-    include         "BIOS_inc.asm"
+    INCLUDE         "BIOS_inc.asm"
 ;--------------------------------------------------------
 
 ALIGN MACRO
@@ -233,51 +233,49 @@ BIOS_CDC_MODE_SET MACRO
 ;           INTERRUPTS AND ACCESS MODES
 ;--------------------------------------------------------
 
-SUB_CPU_DEFINES:
-
-SUB_RTS             equ         $4e75
-SUB_RTE             equ         $4e73
-SUB_JMP             equ         $4ef9
+SUB_RTS             EQU         $4e75
+SUB_RTE             EQU         $4e73
+SUB_JMP             EQU         $4ef9
 
 ;; ACCESS MODE 1 FROM THE CARTRIDGE SLOT TO READ THE CONTENTS
 ;; OF A GENERIC CD
 
-SUB_GET_WORD            equ         $01
-SUB_GET_FILE_ID         equ         $02
-SUB_LOAD_FILE_NAME      equ         $03
-SUB_LOAD_DLL_NAME       equ         $04
-SUB_PLAY_CDDA_READ      equ         $05
-SUB_PLAY_CDDA           equ         $06
-SUB_PAUSE_CDDA          equ         $07
-SUB_RESUME_CDDA         equ         $08
-SUB_STOP_CDDA           equ         $09
-SUB_FADE_CDDA           equ         $0A
-SUB_SEEK_CDDA           equ         $0B
+SUB_GET_WORD            EQU         $01
+SUB_GET_FILE_ID         EQU         $02
+SUB_LOAD_FILE_NAME      EQU         $03
+SUB_LOAD_DLL_NAME       EQU         $04
+SUB_PLAY_CDDA_READ      EQU         $05
+SUB_PLAY_CDDA           EQU         $06
+SUB_PAUSE_CDDA          EQU         $07
+SUB_RESUME_CDDA         EQU         $08
+SUB_STOP_CDDA           EQU         $09
+SUB_FADE_CDDA           EQU         $0A
+SUB_SEEK_CDDA           EQU         $0B
 
-SUB_WORD_MODE_1_RAM             equ             $000c0000
-SUB_WORD_MODE_2_RAM             equ             $00080000
+SUB_WORD_MODE_1_RAM             EQU             $000c0000
+SUB_WORD_MODE_2_RAM             EQU             $00080000
 
-SUB_MAIN_FLAG                   equ             $ffff800e
-SUB_SECOND_FLAG	                equ	            $ffff800f
-SUB_COMMON_0                    equ	            $ffff8010
-SUB_COMMON_2		            equ	            $ffff8012
-SUB_COMMON_4		            equ	            $ffff8014
-SUB_COMMON_6                    equ	            $ffff8016
-SUB_COMMON_8		            equ	            $ffff8018
-SUB_COMMON_10	                equ	            $ffff801a
-SUB_COMMON_12	                equ	            $ffff801c
-SUB_COMMON_14	                equ             $ffff801e
-SUB_STATUS_0		            equ	            $ffff8020
-SUB_STATUS_2		            equ             $ffff8022
-SUB_STATUS_4		            equ             $ffff8024
-SUB_STATUS_6		            equ	            $ffff8026
-SUB_STATUS_8		            equ             $ffff8028
-SUB_STATUS_10	                equ             $ffff802a
-SUB_STATUS_12	                equ             $ffff802c
-SUB_STATUS_14	                equ             $ffff02e
-SUB_PROC_RAM	                equ             $00000000
-SUB_PROC_RAM_B0	                equ             SUB_PROC_RAM	
-SUB_PROC_RAM_B1	                equ	            SUB_PROC_RAM+$20000
-SUB_PROC_RAM_B2	                equ	            SUB_PROC_RAM+$40000
-SUB_PROC_RAM_B3	                equ             SUB_PROC_RAM+$60000
-SUB_MEM	                        equ	            $ffff8003
+SUB_MAIN_FLAG                   EQU             $ffff800e
+SUB_SECOND_FLAG                 EQU             $ffff800f
+SUB_COMMON_0                    EQU             $ffff8010
+SUB_COMMON_2                    EQU             $ffff8012
+SUB_COMMON_4                    EQU             $ffff8014
+SUB_COMMON_6                    EQU             $ffff8016
+SUB_COMMON_8                    EQU             $ffff8018
+SUB_COMMON_10                   EQU             $ffff801a
+SUB_COMMON_12                   EQU             $ffff801c
+SUB_COMMON_14                   EQU             $ffff801e
+SUB_STATUS_0                    EQU             $ffff8020
+SUB_STATUS_2                    EQU             $ffff8022
+SUB_STATUS_4                    EQU             $ffff8024
+SUB_STATUS_6                    EQU             $ffff8026
+SUB_STATUS_8                    EQU             $ffff8028
+SUB_STATUS_10                   EQU             $ffff802a
+SUB_STATUS_12                   EQU             $ffff802c
+SUB_STATUS_14                   EQU             $ffff02e
+SUB_PROC_RAM                    EQU             $00000000
+SUB_PROC_RAM_B0                 EQU             SUB_PROC_RAM    
+SUB_PROC_RAM_B1                 EQU             SUB_PROC_RAM+$20000
+SUB_PROC_RAM_B2                 EQU             SUB_PROC_RAM+$40000
+SUB_PROC_RAM_B3                 EQU             SUB_PROC_RAM+$60000
+SUB_MEM                         EQU             $ffff8003
