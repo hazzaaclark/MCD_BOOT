@@ -36,8 +36,11 @@ OP_GET_WORD_RAM:
 
 OP_LOAD_FILE_ID:
     MOVEQ           #0, D1
-    MOVE.W          SUB_COMMON_0, D1        ;; GET COMMON FILE ID HEADER INFO
+    MOVE.W          SUB_COMMON_0, D1         ;; GET COMMON FILE ID HEADER INFO
     LSL.L           #1, D1
-    MOVE.W          (PC, D1.W), D1          ;; SET THE CURRENT INDEX OF THE FILE ID IN THE PC AND MOVE TO D1
-    LEA             (PC, D1.W), A0          ;; LOAD PREVIOUS INTO A0
-    BSR             FIND_FILE               ;; BRANCH TO FIND FILE SUBROUTINE
+    MOVE.W          (PC, D1.W), D1           ;; SET THE CURRENT INDEX OF THE FILE ID IN THE PC AND MOVE TO D1
+    LEA             (PC, D1.W), A0           ;; LOAD PREVIOUS INTO A0
+    BSR             FIND_FILE                ;; BRANCH TO FIND FILE SUBROUTINE
+    MOVE.L          SUB_WORD_MODE_2_RAM, A0
+    BSR             READ_CD
+    RTS
