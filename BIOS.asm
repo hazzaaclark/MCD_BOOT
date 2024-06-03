@@ -23,8 +23,6 @@ MD_VER              EQU         0
 SP_SECTOR           DC.L        0
 SP_ROOT_DIR_BUF     EQU         156
 
-ORG                 $00FF0000-$200
-
 SUB_HEADER:
 
 NODULE_NAME:            DC.B        'MAIN-SUBCPU', 0
@@ -41,7 +39,7 @@ SUB_JUMP_TABLE:
 
 ;--------------------------------------------------------
 ;              INITIALISE THE STACK POINTER
-;       THIS WORKS UNDEER THE GUISE OF BEING CALLED
+;       THIS WORKS UNDER THE GUISE OF BEING CALLED
 ;       ON A SINGLE COUROUTINE AFTER THE INITIAL BOOT
 ;--------------------------------------------------------
 
@@ -62,49 +60,51 @@ SP_INIT:
 
 INIT_ISO9660:                   
 
-    PUSH            D0-D7/A0-A6                 ;; STORE ALL RELEVANT REGISTERS FOR CACHE
+    MOVEM.L         D0-D7/A0-A6,-(SP)           ;; STORE ALL RELEVANT REGISTERS FOR CACHE
     MOVE.L          #$10, D0                    ;; START OFFSET FOR PARSING DISC
     MOVE.L          #$2, D1                     ;; OFFSET SIZE  
     LEA.L           SP_SECTOR, A0               ;; EVALUATE THE START OFFSET AT THE EFFECTIVE ADDRESS
     BSR             READ_CD                     ;; BRANCH OFF TO READ THE CONTENTS OF THE CD, BASED ON THE ABOVE PRE-REQ'S
 
-    LEA.L           SP_SECTOR, A0               ;; AFETR WHICH, GET THE POINTER OFFSET CURRENTLY AT A0
+    LEA.L           SP_SECTOR, A0               ;; AFTER WHICH, GET THE POINTER OFFSET CURRENTLY AT A0
     LEA.L           SP_ROOT_DIR_BUF(A0), A1     ;; STORE THE ROOT DIRECTORY RECORD FROM A0 AND LOAD IT INTO A1
 
     ;; THE FOLLOWING BITSHIFT SECTION SERVES TO
-    ;; PROVIDE LIASSE FOR THE CD DRIVE 
+    ;; PROVIDE LIAISSE FOR THE CD DRIVE 
     ;; -----------------------------------------
     ;; SUCH THAT IT IS ABLE TO STORE THE CURRENT OFFSET
-    ;; OF THE READER CONCURRENTLY BASD ON WHICH NIBBLE IS REQUIRED (6-9)
-
+    ;; OF THE READER CONCURRENTLY BASED ON WHICH NIBBLE IS REQUIRED (6-9)
 
     MOVE.B          6(A1), D0                   ;; GET THE FIRST PART OF THE SECTOR OFFSET
-    LSL.L           SP_BITSHIFT
+    LSL.L           #8, D0                      ;; SHIFT LEFT LOGICAL BY 8 BITS
     MOVE.B          7(A1), D0
-    LSL.L           SP_BITSHIFT
+    LSL.L           #8, D0
     MOVE.B          8(A1), D0
-    LSL.L           SP_BITSHIFT
-    MOVE.B          9(A), D0
+    LSL.L           #8, D0
+    MOVE.B          9(A1), D0                   ;; Address register corrected to A1
 
     MOVE.L          #$20, D1                    ;; SIZE OF SECTOR OFFSET
     BSR             READ_CD
 
-    PUSH            D0-D7/A0-A6
+    MOVEM.L         (SP)+, D0-D7/A0-A6          ;; RESTORE REGISTERS
     RTS
 
 READ_CD:
 
-    PUSH            D0-D7/A0-A6                 ;; STORE ALL RELEVANT REGISTERS FOR CACHE
+    MOVEM.L         D0-D7/A0-A6,-(SP)           ;; STORE ALL RELEVANT REGISTERS FOR CACHE
     LEA             BIOS_INIT_STDCALL(PC), A5   ;; INIT AND LOAD THE STDCALL BIOS PARAM (STORES A 32 BIT STATIC LONG)
-    MOVE.L          DO,(A5)                     ;; WRITE START OFFSET TO BIOS STDCALL
-    MOVE.L          D1,4(A5)                    ;; WRITE START OFFSET SIZE TO BIOS STDCALL
-    MOVE.L          A0,8(A5)                    ;; WRITE RESULT TO THE RELEVANT ADDRESS
+    MOVE.L          D0, (A5)                    ;; WRITE START OFFSET TO BIOS STDCALL
+    MOVE.L          D1, 4(A5)                   ;; WRITE START OFFSET SIZE TO BIOS STDCALL
+    MOVE.L          A0, 8(A5)                   ;; WRITE RESULT TO THE RELEVANT ADDRESS
     MOVE.L          A5, A0                      ;; STORE RESULT
     BIOS_CDC_STOP
     BIOS_ROM_READ_SECTOR
 
+    MOVEM.L         (SP)+, D0-D7/A0-A6          ;; RESTORE REGISTERS
+    RTS
+
 FIND_FILE:
-    PUSH            A1/A2/A6                    ;; STORE USED REGISTERS FOR READING CD FILE
+    MOVEM.L         A1/A2/A6, -(SP)             ;; STORE USED REGISTERS FOR READING CD FILE
     LEA.L           SP_SECTOR, A1               ;; LOAD THE SECTOR OFFSET INTO A1
 
 @readFILENAME_START:
@@ -119,24 +119,24 @@ FIND_FILE:
 @waitSTAT:
 
     BIOS_CDC_START
-    BCS @waitSTAT
+    BCS             @waitSTAT
 
 @waitREAD:
 
     BIOS_CDC_READ
-    BCC @waitREAD
+    BCC             @waitREAD
 
 @waitTRANSFER:
-    MOVEA.L         8(A5), A0                   ;; GET THE DESITNAION ADDRESS IN RELATION TO THE BITMASK
+    MOVEA.L         8(A5), A0                   ;; GET THE DESTINATION ADDRESS IN RELATION TO THE BITMASK
     LEA             12(A5), A1                  ;; GET HEADER STORE
     BIOS_CDC_WRITE                              ;; WRITE CONTENTS
     BRA             @waitTRANSFER               ;; IF NO CONTENTS, BRANCH BACK AND RUN THE SUBROUTINE AGAIN
     BIOS_CDC_CALLBACK
-    ADDQ.L          #1, (A5)                    ;; INCREMENT WRITE SECTOR=
+    ADDQ.L          #1, (A5)                    ;; INCREMENT WRITE SECTOR
     ADDI.L          #$0800, 8(A5)               ;; INCREMENT DEST REGISTER
     SUBQ.L          #1, 4(A5)
     BNE             @waitSTAT
-    PUSH            D0-D7/A0-A6
+    MOVEM.L         (SP)+, D0-D7/A0-A6          ;; RESTORE REGISTERS
     RTS
 
 BIOS_INIT_STDCALL:
@@ -149,4 +149,4 @@ HEADER:
 
 SP_BITSHIFT:
     
-    LSL.L           #8, D0
+    DC.L            8
