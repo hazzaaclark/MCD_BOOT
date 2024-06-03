@@ -10,8 +10,8 @@
 ;     THIS SUB-ROUTINES FOR THE CPU TO BOOT THE DISC
 ;--------------------------------------------------------
 
-    include     "BIOS_inc.asm"
-    include     "macros.asm"
+    INCLUDE     "BIOS_inc.asm"
+    INCLUDE     "macros.asm"
 
 ;--------------------------------------------------------
 ;       DETERMINE THE VALUES NECESSARY FOR ACCESSING
@@ -102,6 +102,19 @@ READ_CD:
     MOVE.L          A5, A0                      ;; STORE RESULT
     BIOS_CDC_STOP
     BIOS_ROM_READ_SECTOR
+
+FIND_FILE:
+    PUSH            A1/A2/A6                    ;; STORE USED REGISTERS FOR READING CD FILE
+    LEA.L           SP_SECTOR, A1               ;; LOAD THE SECTOR OFFSET INTO A1
+
+@readFILENAME_START:
+    MOVEA.L         A0, A6                      ;; STORE FILENAME POINTER
+    MOVE.B          (A6)+, D0                   ;; ADD THE CORRESPONDENCE FROM A6 INTO D0 (READ CHAR FROM FILE)
+
+@findFIRST_CHAR:
+    MOVEA.L         A1, A2                      ;; STORE SECTOR BUFFER POINTER BEFORE COMPARISON
+    CMP.B           (A1)+, D0                   ;; COMPARE THE RESPECTIVE CHAR DIRECTIVE
+    BNE.B           @findFIRST_CHAR
 
 @waitSTAT:
 
