@@ -18,7 +18,7 @@ Sideloading your own content onto the console through this bootloader, which hou
 
 - (WIP) PCM audio driver support for full 44100KHz audio
 
-![image](https://github.com/hazzaaclark/MCD_BOOT/assets/107435091/713d6415-fd60-4544-89e3-1ef4a7bfe3b4)
+![image](https://github.com/hazzaaclark/MCD_BOOT/assets/107435091/c3509779-6320-4eaa-bd53-0b0bf8c3d0b1)
 
 
 ## Development:
