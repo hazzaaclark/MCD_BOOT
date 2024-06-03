@@ -34,7 +34,7 @@ MODULE_WORK_ADDR:       DC.L        0
 
 SUB_JUMP_TABLE:         
     DC.W        SP_INIT-SUB_JUMP_TABLE
-    ;DC.W        SP_INIT_DRIVE-SUB_JUMP_TABLE
+    DC.W        SP_INIT_DRIVE-SUB_JUMP_TABLE
     DC.W        SP_IRQ-SUB_JUMP_TABLE
 
 ;--------------------------------------------------------
@@ -52,8 +52,21 @@ SP_INIT:
     MOVEQ           #0, D0                      ;; THIS IS THE MCD HALTING FOR A BRIEF MOMENT BEFORE LOADING THE 'SEGA' SPLASH
     RTS
 
+;------------------------------------------
+;       EMPTY FUNCTION THAT DOES NOTHING
+;------------------------------------------
+
 SP_IRQ:
     RTS
+
+;------------------------------------------
+;  MAIN ROUTINE FOR INITIALISING THE DRIVE
+;------------------------------------------
+
+SP_INIT_DRIVE:
+    TST.B   $FF800E
+    BNE     SP_INIT_DRIVE
+    MOVE.B  #1, $FF800F
 
 ;--------------------------------------------------------
 ;           INITIALISE THE BACKEND FOR WHICH
@@ -89,7 +102,7 @@ INIT_ISO9660:
     MOVE.L          #$20, D1                    ;; SIZE OF SECTOR OFFSET
     BSR             READ_CD
 
-    MOVEM.L         (SP)+, D0-D7/A0-A6          ;; RESTORE REGISTERS
+    PUSH            D0-D7/A0-A6          ;; RESTORE REGISTERS
     RTS
 
 READ_CD:
