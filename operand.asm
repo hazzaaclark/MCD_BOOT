@@ -44,3 +44,28 @@ OP_LOAD_FILE_ID:
     MOVE.L          SUB_WORD_MODE_2_RAM, A0
     BSR             READ_CD
     RTS
+
+OP_LOAD_FILE_NAME:
+    MOVE.L          SUB_COMMON_0, A0
+    BSR             FIND_FILE
+    MOVE.L          SUB_WORD_MODE_2_RAM, A0
+    BSR             READ_CD
+    SUB_MEM
+    RTS
+
+OP_NULL:
+    RTS
+
+OP_PLAY_CDDA_REP:
+    MOVE.W      #$400, D1
+    BIOS_CDC_MODE_SET
+    MOVEQ       #0, D1
+    ADDQ.B      #2, D1
+    BIOS_MUSIC_STOP
+    BIOS_CDC_READ
+    BIOS_MUSIC_STOP
+    MOVE.W      SUB_COMMON_0, D1
+    LEA.L           #0, A0
+    MOVE.W          D1, (A0)
+    BIOS_MUSIC_PLAYER
+    RTS
