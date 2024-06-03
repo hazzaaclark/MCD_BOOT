@@ -74,7 +74,9 @@ SP_INIT_DRIVE:
     MOVE.B  $FF800E, D0
     ADD.W   D0, D0  
     ADD.W   D0, D0
-    JSR     OPERAND_TABLE(PC,D0)
+    MOVEA.L #OPERAND_TABLE, A0
+    MOVE.W  (A0, D0.W), A0
+    JSR     (A0)
     MOVE.B  #0, $FF800F
     BRA     SP_INIT_DRIVE
 
@@ -89,11 +91,11 @@ INIT_ISO9660:
     MOVEM.L         D0-D7/A0-A6,-(SP)           ;; STORE ALL RELEVANT REGISTERS FOR CACHE
     MOVE.L          #$10, D0                    ;; START OFFSET FOR PARSING DISC
     MOVE.L          #$2, D1                     ;; OFFSET SIZE  
-    LEA.L           SP_SECTOR, A0               ;; EVALUATE THE START OFFSET AT THE EFFECTIVE ADDRESS
+    LEA             SP_SECTOR, A0               ;; EVALUATE THE START OFFSET AT THE EFFECTIVE ADDRESS
     BSR             READ_CD                     ;; BRANCH OFF TO READ THE CONTENTS OF THE CD, BASED ON THE ABOVE PRE-REQ'S
 
-    LEA.L           SP_SECTOR, A0               ;; AFTER WHICH, GET THE POINTER OFFSET CURRENTLY AT A0
-    LEA.L           SP_ROOT_DIR_BUF(A0), A1     ;; STORE THE ROOT DIRECTORY RECORD FROM A0 AND LOAD IT INTO A1
+    LEA             SP_SECTOR, A0               ;; AFTER WHICH, GET THE POINTER OFFSET CURRENTLY AT A0
+    LEA             SP_ROOT_DIR_BUF(A0), A1     ;; STORE THE ROOT DIRECTORY RECORD FROM A0 AND LOAD IT INTO A1
 
     ;; THE FOLLOWING BITSHIFT SECTION SERVES TO
     ;; PROVIDE LIAISSE FOR THE CD DRIVE 
@@ -107,12 +109,12 @@ INIT_ISO9660:
     LSL.L           #8, D0
     MOVE.B          8(A1), D0
     LSL.L           #8, D0
-    MOVE.B          9(A1), D0                   ;; Address register corrected to A1
+    MOVE.B          9(A1), D0
 
     MOVE.L          #$20, D1                    ;; SIZE OF SECTOR OFFSET
     BSR             READ_CD
 
-    PUSH            D0-D7/A0-A6          ;; RESTORE REGISTERS
+    MOVEM.L         (SP)+, D0-D7/A0-A6          ;; RESTORE REGISTERS
     RTS
 
 READ_CD:
@@ -131,7 +133,7 @@ READ_CD:
 
 FIND_FILE:
     MOVEM.L         A1/A2/A6, -(SP)             ;; STORE USED REGISTERS FOR READING CD FILE
-    LEA.L           SP_SECTOR, A1               ;; LOAD THE SECTOR OFFSET INTO A1
+    LEA             SP_SECTOR, A1               ;; LOAD THE SECTOR OFFSET INTO A1
 
 @readFILENAME_START:
     MOVEA.L         A0, A6                      ;; STORE FILENAME POINTER
@@ -186,54 +188,24 @@ SP_BITSHIFT:
 
 OPERAND_TABLE:
 
-        BRA.W           OP_NULL
-        BRA.W           OP_GET_WORD_RAM
-        BRA.W           OP_LOAD_FILE_ID
-        BRA.W           OP_LOAD_FILE_NAME
-        BRA.W           OP_PLAY_CDDA_REP
-        BRA.W           OP_PLAY_CDDA
-        BRA.W           OP_PAUSE_CDDA
-        BRA.W           OP_UNPAUSE_CDDA
-        BRA.W           OP_STOP_CDDA
-        BRA.W           OP_CDDA_FO
-        BRA.W           OP_CDDA_SEEK 
+        DC.W           OP_NULL
+        DC.W           OP_GET_WORD_RAM
+        DC.W           OP_LOAD_FILE_NAME
 
 OP_GET_WORD_RAM:
-    BSET            SUB_MEM
-    RTS
-
-OP_LOAD_FILE_ID:
-    MOVEQ           #0, D1
-    MOVE.W          SUB_COMMON_0, D1         ;; GET COMMON FILE ID HEADER INFO
-    LSL.L           #1, D1
-    MOVE.W          (PC, D1.W), D1           ;; SET THE CURRENT INDEX OF THE FILE ID IN THE PC AND MOVE TO D1
-    LEA             (PC, D1.W), A0           ;; LOAD PREVIOUS INTO A0
-    BSR             FIND_FILE                ;; BRANCH TO FIND FILE SUBROUTINE
-    MOVE.L          SUB_WORD_MODE_2_RAM, A0
-    BSR             READ_CD
+    BSET            #0, $FF8003                       
     RTS
 
 OP_LOAD_FILE_NAME:
-    MOVE.L          SUB_COMMON_0, A0
+    LEA             @BOOT(PC), A0
     BSR             FIND_FILE
-    MOVE.L          SUB_WORD_MODE_2_RAM, A0
+    MOVE.L          SP_SECTOR, A0
     BSR             READ_CD
-    SUB_MEM
     RTS
+
+@BOOT:
+    DC.B        'M_INIT.PRG', 0
+    ALIGN       2
 
 OP_NULL:
-    RTS
-
-OP_PLAY_CDDA_REP:
-    MOVE.W      #$400, D1
-    BIOS_CDC_MODE_SET
-    MOVEQ       #0, D1
-    ADDQ.B      #2, D1
-    BIOS_MUSIC_STOP
-    BIOS_CDC_READ
-    BIOS_MUSIC_STOP
-    MOVE.W      SUB_COMMON_0, D1
-    LEA.L           #0, A0
-    MOVE.W          D1, (A0)
-    BIOS_MUSIC_PLAYER
     RTS
