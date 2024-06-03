@@ -25,7 +25,7 @@ SP_ROOT_DIR_BUF     EQU         156
 
 SUB_HEADER:
 
-MODULE_NAME:            DC.B        'MAIN-SUBCPU', 0
+MODULE_NAME:            DC.B        "MAIN-SUBCPU",0
 MODULE_VERSION:         DC.W        0,0
 MODULE_NEXT:            DC.L        0
 MODULE_SIZE:            DC.L        0
@@ -36,6 +36,7 @@ SUB_JUMP_TABLE:
     DC.W        SP_INIT-SUB_JUMP_TABLE
     DC.W        SP_INIT_DRIVE-SUB_JUMP_TABLE
     DC.W        SP_IRQ-SUB_JUMP_TABLE
+    DC.W        0
 
 ;--------------------------------------------------------
 ;              INITIALISE THE STACK POINTER
@@ -133,7 +134,7 @@ READ_CD:
 
 FIND_FILE:
     MOVEM.L         A1/A2/A6, -(SP)             ;; STORE USED REGISTERS FOR READING CD FILE
-    LEA             SP_SECTOR, A1               ;; LOAD THE SECTOR OFFSET INTO A1
+    LEA.L             SP_SECTOR, A1               ;; LOAD THE SECTOR OFFSET INTO A1
 
 @readFILENAME_START:
     MOVEA.L         A0, A6                      ;; STORE FILENAME POINTER
@@ -199,7 +200,7 @@ OP_GET_WORD_RAM:
 OP_LOAD_FILE_NAME:
     LEA             @BOOT(PC), A0
     BSR             FIND_FILE
-    MOVE.L          SP_SECTOR, A0
+    MOVE.L          #$80000, A0
     BSR             READ_CD
     RTS
 
