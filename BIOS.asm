@@ -34,7 +34,7 @@ MODULE_WORK_ADDR:       DC.L        0
 
 SUB_JUMP_TABLE:         
     DC.W        SP_INIT-SUB_JUMP_TABLE
-    DC.W        SP_INIT_DRIVE-SUB_JUMP_TABLE
+    ;DC.W        SP_INIT_DRIVE-SUB_JUMP_TABLE
     DC.W        SP_IRQ-SUB_JUMP_TABLE
 
 ;--------------------------------------------------------
@@ -50,6 +50,9 @@ SP_INIT:
     BSR             INIT_ISO9660                ;; AFTER WHICH, BRANCH OFF TO INITIALISE THE CD
     CLR.B           SUB_SECOND_FLAG             ;; CLEAR THE STATUS FLAG TO INITIAL DRIVE   
     MOVEQ           #0, D0                      ;; THIS IS THE MCD HALTING FOR A BRIEF MOMENT BEFORE LOADING THE 'SEGA' SPLASH
+    RTS
+
+SP_IRQ:
     RTS
 
 ;--------------------------------------------------------
