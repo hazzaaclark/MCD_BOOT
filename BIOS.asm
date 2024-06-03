@@ -25,7 +25,7 @@ SP_ROOT_DIR_BUF     EQU         156
 
 SUB_HEADER:
 
-NODULE_NAME:            DC.B        'MAIN-SUBCPU', 0
+MODULE_NAME:            DC.B        'MAIN-SUBCPU', 0
 MODULE_VERSION:         DC.W        0,0
 MODULE_NEXT:            DC.L        0
 MODULE_SIZE:            DC.L        0
@@ -46,10 +46,9 @@ SUB_JUMP_TABLE:
 SP_INIT:
 
     BIOS_MUSIC_STOP
-    ANDI.B          #$FA, SUB_MEM               ;; SET SUB CPU MEMORY TO 2M
+    ANDI.B          #$FA, SUB_WORD_MODE_2_RAM               ;; SET SUB CPU MEMORY TO 2M
     BSR             INIT_ISO9660                ;; AFTER WHICH, BRANCH OFF TO INITIALISE THE CD
     CLR.B           SUB_SECOND_FLAG             ;; CLEAR THE STATUS FLAG TO INITIAL DRIVE   
-    MOVEQ           #0, D0                      ;; THIS IS THE MCD HALTING FOR A BRIEF MOMENT BEFORE LOADING THE 'SEGA' SPLASH
     RTS
 
 ;------------------------------------------
@@ -67,6 +66,17 @@ SP_INIT_DRIVE:
     TST.B   $FF800E
     BNE     SP_INIT_DRIVE
     MOVE.B  #1, $FF800F
+
+@LOOP:
+    TST.B   $FF800E
+    BEQ     @LOOP
+    MOVEQ   #0, D0
+    MOVE.B  $FF800E, D0
+    ADD.W   D0, D0  
+    ADD.W   D0, D0
+    JSR     OPERAND_TABLE(PC,D0)
+    MOVE.B  #0, $FF800F
+    BRA     SP_INIT_DRIVE
 
 ;--------------------------------------------------------
 ;           INITIALISE THE BACKEND FOR WHICH
@@ -166,3 +176,64 @@ HEADER:
 SP_BITSHIFT:
     
     DC.L            8
+
+
+;--------------------------------------------------------
+;    THE FOLLOWING PERTAINS TOWARDS THE ENCOMPASSING
+;   LOGIC SURROUNDING THE OPERANDS USED FOR RELEVANT
+;                   CD OPERATIONS
+;--------------------------------------------------------
+
+OPERAND_TABLE:
+
+        BRA.W           OP_NULL
+        BRA.W           OP_GET_WORD_RAM
+        BRA.W           OP_LOAD_FILE_ID
+        BRA.W           OP_LOAD_FILE_NAME
+        BRA.W           OP_PLAY_CDDA_REP
+        BRA.W           OP_PLAY_CDDA
+        BRA.W           OP_PAUSE_CDDA
+        BRA.W           OP_UNPAUSE_CDDA
+        BRA.W           OP_STOP_CDDA
+        BRA.W           OP_CDDA_FO
+        BRA.W           OP_CDDA_SEEK 
+
+OP_GET_WORD_RAM:
+    BSET            SUB_MEM
+    RTS
+
+OP_LOAD_FILE_ID:
+    MOVEQ           #0, D1
+    MOVE.W          SUB_COMMON_0, D1         ;; GET COMMON FILE ID HEADER INFO
+    LSL.L           #1, D1
+    MOVE.W          (PC, D1.W), D1           ;; SET THE CURRENT INDEX OF THE FILE ID IN THE PC AND MOVE TO D1
+    LEA             (PC, D1.W), A0           ;; LOAD PREVIOUS INTO A0
+    BSR             FIND_FILE                ;; BRANCH TO FIND FILE SUBROUTINE
+    MOVE.L          SUB_WORD_MODE_2_RAM, A0
+    BSR             READ_CD
+    RTS
+
+OP_LOAD_FILE_NAME:
+    MOVE.L          SUB_COMMON_0, A0
+    BSR             FIND_FILE
+    MOVE.L          SUB_WORD_MODE_2_RAM, A0
+    BSR             READ_CD
+    SUB_MEM
+    RTS
+
+OP_NULL:
+    RTS
+
+OP_PLAY_CDDA_REP:
+    MOVE.W      #$400, D1
+    BIOS_CDC_MODE_SET
+    MOVEQ       #0, D1
+    ADDQ.B      #2, D1
+    BIOS_MUSIC_STOP
+    BIOS_CDC_READ
+    BIOS_MUSIC_STOP
+    MOVE.W      SUB_COMMON_0, D1
+    LEA.L           #0, A0
+    MOVE.W          D1, (A0)
+    BIOS_MUSIC_PLAYER
+    RTS
