@@ -27,7 +27,7 @@ Sideloading your own content onto the console through this bootloader, which hou
 
 - SEGA MEGA CD - JUE BIOS (V2.00 M2)
 
-![image](https://github.com/hazzaaclark/MCD_BOOT/assets/107435091/c3509779-6320-4eaa-bd53-0b0bf8c3d0b1)
+![image](https://github.com/hazzaaclark/MCD_BOOT/assets/107435091/04eefcb4-855b-43d4-a64c-77be32499a07)
 
 - SEGA CD - USA BIOS (V1.10 M1)
 
