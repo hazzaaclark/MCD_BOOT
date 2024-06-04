@@ -1,5 +1,9 @@
 @echo off
 
+ECHO =======================================
+ECHO   HARRY CLARK - SEGA MEGA CD LOADER 
+ECHO =======================================
+
 ECHO BUILDING SECURITY SECTOR
 asm68k /p security.asm, security.bin
 
