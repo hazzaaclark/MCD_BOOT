@@ -10,7 +10,7 @@
 ;--------------------------------------------------------
 
     INCLUDE "BIOS_inc.asm"
-    INCLUDE "macros.asm"
+    INCLUDE "macros.asm"    
 
 ;--------------------------------------------------------
 ;       DEFINE THE CONSTANTS NECESSARY FOR DETERMINING
@@ -23,7 +23,7 @@
 
 SECURITY_SEC:
 
-    incbin  "security\jap.bin"
+    INCBIN  "security\jap.bin"
     ;incbin "security\eur.bin"
 
     BRA     INIT_PROG
