@@ -38,22 +38,24 @@ COPYRIGHT:      DC.B "                  HARRY CLARK  "
 NATIVE_NAME:    DC.B "SEGA CD LOADER                                        "
 OVERSEAS_NAME:  DC.B "SEGA CD LOADER                                        "
 DISK_ID:        DC.B "GM XX-XXXX-XX "
+CHECKSUM:       DC.W 0
 IO:             DC.B "J             "
-                ALIGN           $1F0
+                ALIGN $1F0
 REGION:         DC.B "J             "
 
 ;--------------------------------------------------------
 ;           INITIAL PROGRAM SECURITY COUROUTINE
 ;--------------------------------------------------------
 
-    INCLUDE "security.asm"
+    INCBIN "security.bin";
 
 ;--------------------------------------------------------
 ;                   SUB CPU COUROUTINE
 ;--------------------------------------------------------
 
     ALIGN $1000
-    INCLUDE "BIOS.asm"
+
+    INCBIN "BIOS.bin"
     ALIGN $8000
 
 
