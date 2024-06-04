@@ -24,7 +24,8 @@
 SECURITY_SEC:
 
     INCBIN  "security\jap.bin"
-    ;incbin "security\eur.bin"
+    ;INCBIN  "security\usa.bin"
+    ;INCBIN "security\eur.bin"
 
     BRA     INIT_PROG
     ALIGN   $600            ;; MATCHES THE REGION AFTER COMPILE TIME
