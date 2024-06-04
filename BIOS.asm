@@ -133,11 +133,11 @@ FIND_FILE:
 
 @readFILENAME_START:
     MOVEA.L         A0, A6                      ;; STORE FILENAME POINTER
-    MOVE.B          (A6)+, D0                   ;; ADD THE CORRESPONDENCE FROM A6 INTO D0 (READ CHAR FROM FILE)
+    MOVE.B          (A6)+,D0                   ;; ADD THE CORRESPONDENCE FROM A6 INTO D0 (READ CHAR FROM FILE)
 
 @findFIRST_CHAR:
-    MOVEA.L         A1, A2                      ;; STORE SECTOR BUFFER POINTER BEFORE COMPARISON
-    CMP.B           (A1)+, D0                   ;; COMPARE THE RESPECTIVE CHAR DIRECTIVE
+    MOVEA.L         A1,A2                      ;; STORE SECTOR BUFFER POINTER BEFORE COMPARISON
+    CMP.B           (A1)+,D0                   ;; COMPARE THE RESPECTIVE CHAR DIRECTIVE
     BNE.B           @findFIRST_CHAR
 
 @checkCHARS:
