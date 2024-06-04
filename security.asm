@@ -45,26 +45,45 @@ INIT_PROG:
     MOVE.B      #02, D0             ;; REQUEST WORDWISE RAM FROM THE FILE
     BSR         INIT_SUB
 
-    JMP         $200000             ;; JUMP TO STACK START OFFSER
+    JMP         $200000             ;; JUMP TO STACK START OFFSET
+
+;---------------------------------------
+;       INITIALISE THE SUBROUTINE 
+;
+;   THIS WORKS ON THE BASIS OF BEING
+;  ABLE TO TEST IF THE VALID 'SEGA' SPLASH
+;   ADDRESS IS PRESENT, IF SO, HALT THE SYSTEM
+;           AS IT PREPARES TO BOOT
+;---------------------------------------
+
 
 INIT_SUB:
     TST.B       $A1200F             
     BNE         INIT_SUB
     MOVE.B      #00, $A1200E
 
+;---------------------------------------
+;       NOW WE WAIT AND TEST TO SEE
+;   IF THE RELEVANT SECURITY FILE WORKS
+;   IN TANDEM WITH THE VERSION BIOS
+;---------------------------------------
+
 @WAITRESP:
     TST.B       $A1200F
     BEQ         @WAITRESP
     MOVE.B      D0, $A1200E
 
-@WAITRESP_2:
-    TST.B       $A1200F
-    BNE         @WAITRESP_2
-
 ASYNC_SUB: 
     TST.B       $A1200F
     BNE         ASYNC_SUB
     MOVE.B      #00, $A1200E
+
+;---------------------------------------
+;   FINALLY, BOOT INTO THE RELEVANT 
+;   'SEGA' SPLASH ADDRESS AND SET THE 
+;    BRANCH OF THE SUBROUTINE 
+;       EQUAL TO THE RETURN TYPE
+;---------------------------------------
 
 @WAITREADY:
     TST.B       $A1200F
