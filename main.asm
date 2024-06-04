@@ -38,7 +38,7 @@ COPYRIGHT:      DC.B "(C)               HARRY CLARK  "
 NATIVE_NAME:    DC.B "SEGA CD LOADER                                        "
 OVERSEAS_NAME:  DC.B "SEGA CD LOADER                                        "
 DISK_ID:        DC.B "GM XX-XXXX-XX "
-IO:             DC.B "J             "
+IO:             DC.B "JUE             "
                 ALIGN $1F0
 REGION:         DC.B "JUE             "
 
