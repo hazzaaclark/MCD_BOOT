@@ -13,6 +13,8 @@
     INCLUDE     "BIOS_inc.asm"
     INCLUDE     "macros.asm"
 
+    ORG         $6000
+
 ;--------------------------------------------------------
 ;       DETERMINE THE VALUES NECESSARY FOR ACCESSING
 ;               SPECIFICS IN THE HARDWARE
@@ -23,20 +25,18 @@ MD_VER              EQU         0
 SP_SECTOR           DC.L        0
 SP_ROOT_DIR_BUF     EQU         156
 
-SUB_HEADER:
 
 MODULE_NAME:            DC.B        "MAIN-SUBCPU",0
-MODULE_VERSION:         DC.W        0,0
+MODULE_VERSION:         DC.W        0, 0
 MODULE_NEXT:            DC.L        0
 MODULE_SIZE:            DC.L        0
 MODULE_START_ADDR:      DC.L        $20
 MODULE_WORK_ADDR:       DC.L        0
-
 SUB_JUMP_TABLE:         
-    DC.W        SP_INIT-SUB_JUMP_TABLE
-    DC.W        SP_INIT_DRIVE-SUB_JUMP_TABLE
-    DC.W        SP_IRQ-SUB_JUMP_TABLE
-    DC.W        0
+                        DC.W        SP_INIT-SUB_JUMP_TABLE
+                        DC.W        SP_INIT_DRIVE-SUB_JUMP_TABLE
+                        DC.W        SP_IRQ-SUB_JUMP_TABLE
+                        DC.W        0
 
 ;--------------------------------------------------------
 ;              INITIALISE THE STACK POINTER
@@ -47,9 +47,9 @@ SUB_JUMP_TABLE:
 SP_INIT:
 
     BIOS_MUSIC_STOP
-    ANDI.B          #$FA, SUB_WORD_MODE_2_RAM               ;; SET SUB CPU MEMORY TO 2M
+    ANDI.B          #$FA, $FF8003               ;; SET SUB CPU MEMORY TO 2M
     BSR             INIT_ISO9660                ;; AFTER WHICH, BRANCH OFF TO INITIALISE THE CD
-    CLR.B           SUB_SECOND_FLAG             ;; CLEAR THE STATUS FLAG TO INITIAL DRIVE   
+    CLR.B           $FF800F             ;; CLEAR THE STATUS FLAG TO INITIAL DRIVE   
     RTS
 
 ;------------------------------------------
