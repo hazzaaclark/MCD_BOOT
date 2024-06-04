@@ -12,7 +12,6 @@
 
     INCLUDE     "BIOS_inc.asm"
     INCLUDE     "macros.asm"
-    ORG $6000
 
 ;--------------------------------------------------------
 ;       DETERMINE THE VALUES NECESSARY FOR ACCESSING
@@ -47,9 +46,10 @@ SUB_JUMP_TABLE:
 
 SP_INIT:
 
-    ANDI.B          #$FA, $FF8003               ;; SET SUB CPU MEMORY TO 2M
+    BIOS_MUSIC_STOP
+    ANDI.B          #$FA, SUB_WORD_MODE_2_RAM               ;; SET SUB CPU MEMORY TO 2M
     BSR             INIT_ISO9660                ;; AFTER WHICH, BRANCH OFF TO INITIALISE THE CD
-    CLR.B           $FF800F             ;; CLEAR THE STATUS FLAG TO INITIAL DRIVE   
+    CLR.B           SUB_SECOND_FLAG             ;; CLEAR THE STATUS FLAG TO INITIAL DRIVE   
     RTS
 
 ;------------------------------------------
@@ -75,9 +75,11 @@ SP_INIT_DRIVE:
     MOVE.B  $FF800E, D0
     ADD.W   D0, D0  
     ADD.W   D0, D0
-    JSR     OPERAND_TABLE(PC, D0)
+    MOVEA.L #OPERAND_TABLE, A0
+    MOVE.W  (A0, D0.W), A0
+    JSR     (A0)
     MOVE.B  #0, $FF800F
-    BRA     SP_INIT
+    BRA     SP_INIT_DRIVE
 
 ;--------------------------------------------------------
 ;           INITIALISE THE BACKEND FOR WHICH
