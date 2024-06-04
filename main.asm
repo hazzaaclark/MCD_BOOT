@@ -24,8 +24,8 @@ IP_SIZE:        DC.L    $800
 IP_ENTRY:       DC.L    0
 IP_WORK_RAM:    DC.L    0
 SP_SIZE:        DC.L    $7000
-SP_ENTRY:       DC.L    0
 SP_ADDR:        DC.L    $1000
+SP_ENTRY:       DC.L    0
 SP_WORK_RAM:    DC.L    0
                 ALIGN   $100 
 
@@ -34,14 +34,13 @@ SP_WORK_RAM:    DC.L    0
 ;---------------------------------------
 
 HARDWARE_TYPE:  DC.B "SEGA MEGA DRIVE "
-COPYRIGHT:      DC.B "                  HARRY CLARK  "
+COPYRIGHT:      DC.B "(C)               HARRY CLARK  "
 NATIVE_NAME:    DC.B "SEGA CD LOADER                                        "
 OVERSEAS_NAME:  DC.B "SEGA CD LOADER                                        "
 DISK_ID:        DC.B "GM XX-XXXX-XX "
-CHECKSUM:       DC.W 0
 IO:             DC.B "J             "
                 ALIGN $1F0
-REGION:         DC.B "J             "
+REGION:         DC.B "JUE             "
 
 ;--------------------------------------------------------
 ;           INITIAL PROGRAM SECURITY COUROUTINE
@@ -54,8 +53,8 @@ REGION:         DC.B "J             "
 ;--------------------------------------------------------
 
     ALIGN $1000
-
     INCBIN "BIOS.bin"
+
     ALIGN $8000
 
 
