@@ -12,6 +12,7 @@
 
     INCLUDE     "BIOS_inc.asm"
     INCLUDE     "macros.asm"
+    ORG $6000
 
 ;--------------------------------------------------------
 ;       DETERMINE THE VALUES NECESSARY FOR ACCESSING
@@ -46,10 +47,9 @@ SUB_JUMP_TABLE:
 
 SP_INIT:
 
-    BIOS_MUSIC_STOP
-    ANDI.B          #$FA, SUB_WORD_MODE_2_RAM               ;; SET SUB CPU MEMORY TO 2M
+    ANDI.B          #$FA, $FF8003               ;; SET SUB CPU MEMORY TO 2M
     BSR             INIT_ISO9660                ;; AFTER WHICH, BRANCH OFF TO INITIALISE THE CD
-    CLR.B           SUB_SECOND_FLAG             ;; CLEAR THE STATUS FLAG TO INITIAL DRIVE   
+    CLR.B           $FF800F             ;; CLEAR THE STATUS FLAG TO INITIAL DRIVE   
     RTS
 
 ;------------------------------------------
@@ -75,11 +75,9 @@ SP_INIT_DRIVE:
     MOVE.B  $FF800E, D0
     ADD.W   D0, D0  
     ADD.W   D0, D0
-    MOVEA.L #OPERAND_TABLE, A0
-    MOVE.W  (A0, D0.W), A0
-    JSR     (A0)
+    JSR     OPERAND_TABLE(PC, D0)
     MOVE.B  #0, $FF800F
-    BRA     SP_INIT_DRIVE
+    BRA     SP_INIT
 
 ;--------------------------------------------------------
 ;           INITIALISE THE BACKEND FOR WHICH
@@ -144,6 +142,38 @@ FIND_FILE:
     MOVEA.L         A1, A2                      ;; STORE SECTOR BUFFER POINTER BEFORE COMPARISON
     CMP.B           (A1)+, D0                   ;; COMPARE THE RESPECTIVE CHAR DIRECTIVE
     BNE.B           @findFIRST_CHAR
+
+@checkCHARS:
+    MOVE.B          (A6)+,D0
+    BEQ             @GETINFO
+    CMP.B           (A1)+,D0
+    BNE.B           @readFILENAME_START
+    BRA.B           @checkCHARS
+
+@GETINFO:
+    SUB.L           #33, A2
+    MOVE.B          6(A2), D0
+    LSL.L           #8, D0
+    MOVE.B          7(A2), D0
+    LSL.L           #8, D0
+    MOVE.B          8(A2), D0
+    LSL.L           #8, D0
+    MOVE.B          9(A2), D0
+
+    MOVE.B	14(A2),D1	
+	LSL.L	#8,D1
+    MOVE.B	15(A2),D1
+    LSL.L	#8,D1
+	MOVE.B	16(A2),D1
+	LSL.L	#8,D1
+	MOVE.B	17(A2),D1
+						
+	LSR.L	#8,D1
+	LSR.L	#3,D1
+	
+    PUSH	A1/A2/A6		
+	RTS
+
 
 @waitSTAT:
 
