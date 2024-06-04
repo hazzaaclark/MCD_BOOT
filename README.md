@@ -18,7 +18,20 @@ Sideloading your own content onto the console through this bootloader, which hou
 
 - (WIP) PCM audio driver support for full 44100KHz audio
 
+## Showcase:
+
+- SEGA MEGA CD - JPN BIOS (V1.00p M1)
+
+![image](https://github.com/hazzaaclark/MCD_BOOT/assets/107435091/c7414329-9ba5-417c-bede-6e4a10b4c41d)
+
+
+- SEGA MEGA CD - JUE BIOS (V2.00 M2)
+
 ![image](https://github.com/hazzaaclark/MCD_BOOT/assets/107435091/c3509779-6320-4eaa-bd53-0b0bf8c3d0b1)
+
+- SEGA CD - USA BIOS (V1.10 M1)
+
+![image](https://github.com/hazzaaclark/MCD_BOOT/assets/107435091/bd089f5c-f92e-4920-910e-4faf962d2572)
 
 
 ## Development:
