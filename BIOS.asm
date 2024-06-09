@@ -46,8 +46,21 @@ SUB_JUMP_TABLE:
 SP_INIT:
     ANDI.B          #$FA, $FF8003               ;; SET SUB CPU MEMORY TO 2M
     BSR             INIT_ISO9660                ;; AFTER WHICH, BRANCH OFF TO INITIALISE THE CD
-    CLR.B           $FF800F             ;; CLEAR THE STATUS FLAG TO INITIAL DRIVE   
+    CLR.B           $FF800F                     ;; CLEAR THE STATUS FLAG TO INITIAL DRIVE   
+    MOVEQ           #0, D0
     RTS
+
+SP_INIT_DRIVE:
+    MOVEQ           #0, D0
+    LEA             DRIVE_INIT_PARAMS(PC), A0
+    BIOS_DRV_INIT   
+    BIOS_CDC_STOP
+    BIOS_CDC_STATUS
+
+
+DRIVE_INIT_PARAMS:
+    DC.B            1, $FF
+    EVEN
 
 ;------------------------------------------
 ;       EMPTY FUNCTION THAT DOES NOTHING
@@ -60,18 +73,24 @@ SP_IRQ:
 ;  MAIN ROUTINE FOR INITIALISING THE DRIVE
 ;------------------------------------------
 
-SP_INIT_DRIVE:
+SP_MAIN:
     TST.B   $FF800E
-    BNE     SP_INIT_DRIVE
+    BNE     SP_MAIN
     MOVE.B  #1, $FF800F
-    
-    MOVEQ   #0, D0
-    MOVE.B  $FF800E, D0
-    ADD.W   D0, D0  
-    ADD.W   D0, D0
+
+@LOOP:
+    TST.B   $FF800E
+    BEQ     @LOOP
+
+    MOVEQ   #0, D1
+    MOVE.B  $FF800E, D1
+    BTST    #7, D1
+    ANDI.B  #$7F, D1    
+    ADD.W   D1, D1
+    ADD.W   D1, D1
     JSR     OPERAND_TABLE
     MOVE.B  #0, $FF800F
-    BRA     SP_INIT_DRIVE
+    BRA     SP_MAIN
 
 ;--------------------------------------------------------
 ;           INITIALISE THE BACKEND FOR WHICH
@@ -203,6 +222,7 @@ HEADER:
 ;--------------------------------------------------------
 
 OPERAND_TABLE:
+
     BRA.W           OP_NULL
     BRA.W           OP_GET_WORD_RAM
     BRA.W           OP_LOAD_FILE_NAME
@@ -219,7 +239,7 @@ OP_LOAD_FILE_NAME:
     RTS
 
 @BOOT:
-    DC.B        'M_INIT.PRG', 0
+    DC.B        'game.bin', 0
     ALIGN       2
 
 OP_NULL:
