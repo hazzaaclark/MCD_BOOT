@@ -25,7 +25,7 @@ MD_VER              EQU         0
 SP_SECTOR:          DC.L        0
 
 
-MODULE_NAME:            DC.B        "MAIN-SUBCPU",0
+MODULE_NAME:            DC.B        'MAIN-SUBCPU',0
 MODULE_VERSION:         DC.W        0, 0
 MODULE_NEXT:            DC.L        0
 MODULE_SIZE:            DC.L        0
@@ -44,8 +44,6 @@ SUB_JUMP_TABLE:
 ;--------------------------------------------------------
 
 SP_INIT:
-
-    BIOS_MUSIC_STOP
     ANDI.B          #$FA, $FF8003               ;; SET SUB CPU MEMORY TO 2M
     BSR             INIT_ISO9660                ;; AFTER WHICH, BRANCH OFF TO INITIALISE THE CD
     CLR.B           $FF800F             ;; CLEAR THE STATUS FLAG TO INITIAL DRIVE   
@@ -66,15 +64,11 @@ SP_INIT_DRIVE:
     TST.B   $FF800E
     BNE     SP_INIT_DRIVE
     MOVE.B  #1, $FF800F
-
-@LOOP:
-    TST.B   $FF800E
-    BEQ     @LOOP
     
-    MOVEQ   #0, D1
-    MOVE.B  $FF800E, D1
-    ADD.W   D1, D1  
-    ADD.W   D1, D1
+    MOVEQ   #0, D0
+    MOVE.B  $FF800E, D0
+    ADD.W   D0, D0  
+    ADD.W   D0, D0
     JSR     OPERAND_TABLE
     MOVE.B  #0, $FF800F
     BRA     SP_INIT_DRIVE
@@ -141,9 +135,9 @@ FIND_FILE:
     BNE.B           @findFIRST_CHAR
 
 @checkCHARS:
-    MOVE.B          (A6)+,D0
-    BEQ             @GETINFO
-    CMP.B           (A1)+,D0
+    MOVE.B          (A6)+,D0                    ;; INCREMENT INFO BYTES CACHE BY THE CONTENTS LOADED FROM D0
+    BEQ             @GETINFO                    ;; IF SUCCESSFUL, BRANCH TO THE LOOP EQUAL TO IT'S RETURN TYPE  
+    CMP.B           (A1)+,D0    
     BNE.B           @readFILENAME_START
     BRA.B           @checkCHARS
 
@@ -182,7 +176,7 @@ FIND_FILE:
     BIOS_CDC_READ
     BCC             @waitREAD
 
-@waitTRANSFER:
+@WaitTRANSFER:
     MOVEA.L         8(A5), A0                   ;; GET THE DESTINATION ADDRESS IN RELATION TO THE BITMASK
     LEA             12(A5), A1                  ;; GET HEADER STORE
     BIOS_CDC_WRITE                              ;; WRITE CONTENTS
@@ -197,17 +191,11 @@ FIND_FILE:
 
 BIOS_INIT_STDCALL:
 
-    DC.L            0, 0, 0, 0
+    DC.L            0, 0, 0, 0, 0
 
 HEADER:
 
     DS.L            32
-
-SP_BITSHIFT:
-    
-    DC.L            8
-
-
 ;--------------------------------------------------------
 ;    THE FOLLOWING PERTAINS TOWARDS THE ENCOMPASSING
 ;   LOGIC SURROUNDING THE OPERANDS USED FOR RELEVANT
