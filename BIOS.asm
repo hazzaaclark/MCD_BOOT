@@ -31,9 +31,8 @@ MODULE_NEXT:            DC.L        0
 MODULE_SIZE:            DC.L        0
 MODULE_START_ADDR:      DC.L        $20
 MODULE_WORK_ADDR:       DC.L        0
-SUB_JUMP_TABLE:         
-                        DC.W        SP_INIT-SUB_JUMP_TABLE
-                        DC.W        SP_INIT_DRIVE-SUB_JUMP_TABLE
+SUB_JUMP_TABLE:         DC.W        SP_INIT-SUB_JUMP_TABLE
+                        DC.W        SP_MAIN-SUB_JUMP_TABLE
                         DC.W        SP_IRQ-SUB_JUMP_TABLE
                         DC.W        0
 
@@ -47,20 +46,7 @@ SP_INIT:
     ANDI.B          #$FA, $FF8003               ;; SET SUB CPU MEMORY TO 2M
     BSR             INIT_ISO9660                ;; AFTER WHICH, BRANCH OFF TO INITIALISE THE CD
     CLR.B           $FF800F                     ;; CLEAR THE STATUS FLAG TO INITIAL DRIVE   
-    MOVEQ           #0, D0
     RTS
-
-SP_INIT_DRIVE:
-    MOVEQ           #0, D0
-    LEA             DRIVE_INIT_PARAMS(PC), A0
-    BIOS_DRV_INIT   
-    BIOS_CDC_STOP
-    BIOS_CDC_STATUS
-
-
-DRIVE_INIT_PARAMS:
-    DC.B            1, $FF
-    EVEN
 
 ;------------------------------------------
 ;       EMPTY FUNCTION THAT DOES NOTHING
@@ -82,13 +68,13 @@ SP_MAIN:
     TST.B   $FF800E
     BEQ     @LOOP
 
-    MOVEQ   #0, D1
-    MOVE.B  $FF800E, D1
-    BTST    #7, D1
-    ANDI.B  #$7F, D1    
-    ADD.W   D1, D1
-    ADD.W   D1, D1
-    JSR     OPERAND_TABLE
+    MOVEQ   #0, D0
+    MOVE.B  $FF800E, D0  
+    ADD.W   D0, D0
+    ADD.W   D0, D0
+    MOVE.L  OPERAND(PC), A0
+    MOVE.L  (A0, D0.W), A0
+    JSR     (A0)
     MOVE.B  #0, $FF800F
     BRA     SP_MAIN
 
@@ -199,7 +185,7 @@ FIND_FILE:
     MOVEA.L         8(A5), A0                   ;; GET THE DESTINATION ADDRESS IN RELATION TO THE BITMASK
     LEA             12(A5), A1                  ;; GET HEADER STORE
     BIOS_CDC_WRITE                              ;; WRITE CONTENTS
-    BCC             @waitTRANSFER               ;; IF NO CONTENTS, BRANCH BACK AND RUN THE SUBROUTINE AGAIN
+    BCC             @WaitTRANSFER               ;; IF NO CONTENTS, BRANCH BACK AND RUN THE SUBROUTINE AGAIN
     BIOS_CDC_CALLBACK
     ADDQ.L          #1, (A5)                    ;; INCREMENT WRITE SECTOR
     ADDI.L          #$0800, 8(A5)               ;; INCREMENT DEST REGISTER
@@ -221,8 +207,7 @@ HEADER:
 ;                   CD OPERATIONS
 ;--------------------------------------------------------
 
-OPERAND_TABLE:
-
+OPERAND:
     BRA.W           OP_NULL
     BRA.W           OP_GET_WORD_RAM
     BRA.W           OP_LOAD_FILE_NAME
@@ -240,7 +225,7 @@ OP_LOAD_FILE_NAME:
 
 @BOOT:
     DC.B        'game.bin', 0
-    ALIGN       2
+    even
 
 OP_NULL:
     RTS
