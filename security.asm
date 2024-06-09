@@ -73,6 +73,10 @@ INIT_SUB:
     BEQ         @WAITRESP
     MOVE.B      D0, $A1200E
 
+@WAITRESP_2:
+    TST.B       $A1200F
+    BEQ         @WAITRESP_2
+
 ASYNC_SUB: 
     TST.B       $A1200F
     BNE         ASYNC_SUB
