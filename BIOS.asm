@@ -57,9 +57,10 @@ SP_IRQ:
 ;------------------------------------------
 
 SP_MAIN:
-    TST.B   $FF800E
-    BNE     SP_MAIN
-    MOVE.B  #1, $FF800F
+    BIOS_STATUS_TABLE
+    MOVE.W      (A0),D0
+    ANDI.W      #$F000,D0
+    BNE.S     SP_MAIN
 
 @LOOP:
     TST.B   $FF800E
