@@ -23,8 +23,8 @@
 
 SECURITY_SEC:
 
-    INCBIN  "security\jap.bin"
-    ;INCBIN  "security\usa.bin"
+    ;INCBIN  "security\jap.bin"
+    INCBIN  "security\usa.bin"
     ;INCBIN "security\eur.bin"
 
     BRA     INIT_PROG
