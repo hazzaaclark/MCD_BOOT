@@ -62,8 +62,7 @@ SP_MAIN:
     ANDI.W      #$F000,D0
     BNE.S     SP_MAIN
 
-@LOOP:
-    TST.B   $FF800E
+    LEA     BIOS_PARAMS(PC), A0
     BEQ     @LOOP
 
     MOVEQ   #0, D0
