@@ -137,3 +137,14 @@ _USERCALL2        EQU   $00005F34 ;VINT
 _USERCALL3        EQU   $00005F3A ;NOT DEFINED
 _USERMODE         EQU   $00005EA6
 _WAITVSYNC        EQU   $00005F10
+
+
+;-----------------------------------------------------------------------
+; SUB-CPU DIRECIVES
+;-----------------------------------------------------------------------
+
+SP_START              EQU  $6000 
+SP_PRG_RAM            EQU  $00000
+
+SP_GATE_BASE          EQU  $FFFF8000		
+SP_PCM_BASE	          EQU  $FFFF0000		 
