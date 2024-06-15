@@ -8,7 +8,6 @@
 ;--------------------------------------------------------
 
     INCLUDE "macros.asm"
-    INCLUDE "BIOS_inc.asm"
 
 ;---------------------------------------
 ;           SEGA MEGA CD HEADER
@@ -23,11 +22,11 @@ SYSTEM_NAME:    DC.B    "HARRYS MCD ",0
 SYSTEM_VER:     DC.W    0,0
 IP_ADDR:        DC.L    $800
 IP_SIZE:        DC.L    $800
-IP_ENTRY:       DC.L    $2000000
+IP_ENTRY:       DC.L    0
 IP_WORK_RAM:    DC.L    0
 SP_SIZE:        DC.L    $7000
 SP_ADDR:        DC.L    $1000
-SP_ENTRY:       DC.L    $2000000
+SP_ENTRY:       DC.L    0
 SP_WORK_RAM:    DC.L    0
                 ALIGN   $100 
 
@@ -58,5 +57,3 @@ REGION:         DC.B "JUE             "
     INCBIN "BIOS.bin"
 
     ALIGN $8000
-    ORG $2000000
-    INCLUDE "game.asm"
