@@ -13,28 +13,28 @@
     INCLUDE     "BIOS_inc.asm"
     INCLUDE     "macros.asm"
 
-    ORG         $6000
+SP_ROOT     EQU $8000
 
 ;--------------------------------------------------------
 ;       DETERMINE THE VALUES NECESSARY FOR ACCESSING
 ;               SPECIFICS IN THE HARDWARE
 ;--------------------------------------------------------
 
-INIT_SYS            EQU         0
-MD_VER              EQU         0
+
 SP_SECTOR:          DC.L        0
 
+                    ORG         SP_START
 
-MODULE_NAME:            DC.B        'MAIN-SUBCPU',0
-MODULE_VERSION:         DC.W        0, 0
-MODULE_NEXT:            DC.L        0
-MODULE_SIZE:            DC.L        0
-MODULE_START_ADDR:      DC.L        $20
-MODULE_WORK_ADDR:       DC.L        0
-SUB_JUMP_TABLE:         DC.W        SP_INIT-SUB_JUMP_TABLE
-                        DC.W        SP_MAIN-SUB_JUMP_TABLE
-                        DC.W        SP_IRQ-SUB_JUMP_TABLE
-                        DC.W        0
+                    DC.B        'MAIN-SUBCPU',0
+                    DC.W        0, 0
+                    DC.L        0
+                    DC.L        0
+                    DC.L        $20
+                    DC.L        0
+                    DC.W        SP_INIT-(SP_START+$20)
+                    DC.W        SP_MAIN-(SP_START+$20)
+                    DC.W        SP_IRQ-(SP_START+$20)
+                    DC.W        0
 
 ;--------------------------------------------------------
 ;              INITIALISE THE STACK POINTER
@@ -43,10 +43,7 @@ SUB_JUMP_TABLE:         DC.W        SP_INIT-SUB_JUMP_TABLE
 ;--------------------------------------------------------
 
 SP_INIT:
-    ANDI.B          #$FA, $FF8003               ;; SET SUB CPU MEMORY TO 2M
-    BSR             INIT_ISO9660                ;; AFTER WHICH, BRANCH OFF TO INITIALISE THE CD
-    CLR.B           $FF800F                     ;; CLEAR THE STATUS FLAG TO INITIAL DRIVE   
-    RTS
+    ANDI.B          #$E2, SUB_WORD_MODE_2_RAM+1               ;; SET SUB CPU MEMORY TO 2M
 
 ;------------------------------------------
 ;       EMPTY FUNCTION THAT DOES NOTHING
