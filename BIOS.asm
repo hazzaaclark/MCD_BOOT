@@ -59,19 +59,11 @@ SP_INIT_DRIVE:
     BIOS_CDC_STOP
     BIOS_CDC_STATUS
 
-;------------------------------------------
-;  MAIN ROUTINE FOR INITIALISING THE DRIVE
-;------------------------------------------
-
 SP_MAIN:
     TST.B   $FF800E
     BNE     SP_MAIN
     MOVE.B  #1, $FF800F
-
-@LOOP:
-    TST.B   $FF800E
-    BEQ     @LOOP
-
+    
     MOVEQ   #0, D1
     MOVE.B  $FF800E, D1
     BTST    #7, D1
@@ -91,7 +83,6 @@ SP_MAIN:
     BRA     SP_MAIN
 
 @DRIVE_DLL:
-
     ANDI.B  #$7F, D1
     ADD.W   D1, D1
     ADD.W   D1, D1
@@ -104,14 +95,7 @@ SP_MAIN:
     MOVE.B  #0, SUB_SECOND_FLAG
     BRA     SP_MAIN
 
-;--------------------------------------------------------
-;    THE FOLLOWING PERTAINS TO THE ENCOMPASSING
-;   LOGIC SURROUNDING THE OPERANDS USED FOR RELEVANT
-;                   CD OPERATIONS
-;--------------------------------------------------------
-
 OPERAND_TABLE:
-
 OPERAND:
     BRA.W           OP_NULL
     BRA.W           OP_GET_WORD_RAM
@@ -129,62 +113,49 @@ OP_LOAD_FILE_NAME:
     RTS
 
 @BOOT:
-    DC.B      "SEGA.bin", 0
-    ALIGN       2
+    DC.B            'hello.BIN', 0
+    even
 
 OP_NULL:
     RTS
 
-;--------------------------------------------------------
-;           INITIALISE THE BACKEND FOR WHICH
-;           THE ISO STANDARD IS PRODUCED BY 
-;      DEFINING THE REGISTERS USED TO PARSE CONTENTS
-;--------------------------------------------------------
-
 INIT_ISO9660:                   
     PUSH            D0-D7/A0-A6           ;; STORE ALL RELEVANT REGISTERS FOR CACHE
-    MOVE.L          #$10, D0                    ;; START OFFSET FOR PARSING DISC
-    MOVE.L          #$2, D1                     ;; OFFSET SIZE  
-    LEA.L           SP_SECTOR, A0               ;; EVALUATE THE START OFFSET AT THE EFFECTIVE ADDRESS
-    BSR             READ_CD                     ;; BRANCH OFF TO READ THE CONTENTS OF THE CD, BASED ON THE ABOVE PRE-REQ'S
+    MOVE.L          #$10, D0              ;; START OFFSET FOR PARSING DISC
+    MOVE.L          #$2, D1               ;; OFFSET SIZE  
+    LEA.L           SP_SECTOR, A0         ;; EVALUATE THE START OFFSET AT THE EFFECTIVE ADDRESS
+    BSR             READ_CD               ;; READ THE CONTENTS OF THE CD
 
-    LEA.L           SP_SECTOR, A0               ;; AFTER WHICH, GET THE POINTER OFFSET CURRENTLY AT A0
-    LEA.L           156(A0), A1                 ;; STORE THE ROOT DIRECTORY RECORD FROM A0 AND LOAD IT INTO A1
+    LEA.L           SP_SECTOR, A0         ;; GET THE POINTER OFFSET CURRENTLY AT A0
+    LEA.L           156(A0), A1           ;; STORE THE ROOT DIRECTORY RECORD FROM A0 AND LOAD IT INTO A1
 
-    ;; THE FOLLOWING BITSHIFT SECTION SERVES TO
-    ;; PROVIDE LIAISSE FOR THE CD DRIVE 
-    ;; -----------------------------------------
-    ;; SUCH THAT IT IS ABLE TO STORE THE CURRENT OFFSET
-    ;; OF THE READER CONCURRENTLY BASED ON WHICH NIBBLE IS REQUIRED (6-9)
-
-    MOVE.B          6(A1), D0                   ;; GET THE FIRST PART OF THE SECTOR OFFSET
-    LSL.L           #8, D0                      ;; SHIFT LEFT LOGICAL BY 8 BITS
+    MOVE.B          6(A1), D0             ;; GET THE FIRST PART OF THE SECTOR OFFSET
+    LSL.L           #8, D0                ;; SHIFT LEFT LOGICAL BY 8 BITS
     MOVE.B          7(A1), D0
     LSL.L           #8, D0
     MOVE.B          8(A1), D0
     LSL.L           #8, D0
     MOVE.B          9(A1), D0
 
-    MOVE.L          #$20, D1                    ;; SIZE OF SECTOR OFFSET
+    MOVE.L          #$20, D1              ;; SIZE OF SECTOR OFFSET
     BSR             READ_CD
 
-    POP             D0-D7/A0-A6          ;; RESTORE REGISTERS
+    POP             D0-D7/A0-A6           ;; RESTORE REGISTERS
     RTS
 
 READ_CD:
-    PUSH            D0-D7/A0-A6                 ;; STORE ALL RELEVANT REGISTERS FOR CACHE
-    LEA             BIOS_INIT_STDCALL(PC), A5   ;; INIT AND LOAD THE STDCALL BIOS PARAM (STORES A 32 BIT STATIC LONG)
-    MOVE.L          D0, (A5)                    ;; WRITE START OFFSET TO BIOS STDCALL
-    MOVE.L          D1, 4(A5)                   ;; WRITE START OFFSET SIZE TO BIOS STDCALL
-    MOVE.L          A0, 8(A5)                   ;; WRITE RESULT TO THE RELEVANT ADDRESS
-    MOVEA.L         A5, A0                      ;; STORE RESULT
+    PUSH            D0-D7/A0-A6           ;; STORE ALL RELEVANT REGISTERS FOR CACHE
+    LEA             BIOS_INIT_STDCALL(PC), A5
+    MOVE.L          D0, (A5)
+    MOVE.L          D1, 4(A5)
+    MOVE.L          A0, 8(A5)
+    MOVEA.L         A5, A0
     BIOS_CDC_STOP
     BIOS_ROM_READ_SECTOR
 
 FIND_FILE:
-    PUSH              A1/A2/A6             ;; STORE USED REGISTERS FOR READING CD FILE
-    LEA.L             SP_SECTOR, A1               ;; LOAD THE SECTOR OFFSET INTO A1
-
+    PUSH            A1/A2/A6              ;; STORE USED REGISTERS FOR READING CD FILE
+    LEA.L           SP_SECTOR, A1         ;; LOAD THE SECTOR OFFSET INTO A1
 
 BIOS_INIT_STDCALL:
     DC.L            0, 0, 0, 0, 0
