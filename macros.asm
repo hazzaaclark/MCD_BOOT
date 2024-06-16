@@ -256,8 +256,8 @@ SUB_STOP_CDDA           EQU         $09
 SUB_FADE_CDDA           EQU         $0A
 SUB_SEEK_CDDA           EQU         $0B
 
-SUB_WORD_MODE_1_RAM             EQU             $000c0000
-SUB_WORD_MODE_2_RAM             EQU             $00080000
+SUB_WORD_MODE_1_RAM             EQU             $C0000
+SUB_WORD_MODE_2_RAM             EQU             $80000
 
 SUB_MAIN_FLAG                   EQU             $ffff800e
 SUB_SECOND_FLAG                 EQU             $ffff800f
@@ -283,3 +283,4 @@ SUB_PROC_RAM_B1                 EQU             SUB_PROC_RAM+$20000
 SUB_PROC_RAM_B2                 EQU             SUB_PROC_RAM+$40000
 SUB_PROC_RAM_B3                 EQU             SUB_PROC_RAM+$60000
 SUB_MEM                         EQU             $FFFF8003
+SUB_DRIVE_DLL_ALIGN             EQU             $00020000
