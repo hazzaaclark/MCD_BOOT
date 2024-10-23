@@ -23,49 +23,39 @@
 
 SECURITY_SEC:
 
-    ;INCBIN  "security\jap.bin"
-    INCBIN  "security\usa.bin"
-    ;INCBIN "security\eur.bin"
+    ;INCBIN  "security/jap.bin"
+    ;INCBIN  "security/usa.bin"
+    INCBIN "security/eur.bin"
 
-    BRA     INIT_PROG
-    ALIGN   $600            ;; MATCHES THE REGION AFTER COMPILE TIME
+     BRA     INIT_PROG
+     ALIGN   $600  ;; MATCHES THE REGION AFTER COMPILE TIME
 
 INIT_PROG:
-
-    BSET        #1, $A12003         ;; GIVE WORD TO SUB CPU
+                BSET        #1, $A12003         ;; GIVE WORD TO SUB CPU
 
 @INITLOOP:
+                TST.B       $A1200F             ;; OFFSET TO DETERMINE IF THE SUB CPU HAS FINISHED INIT
+                BNE         @INITLOOP
 
-    TST.B       $A1200F             ;; OFFSET TO DETERMINE IF THE SUB CPU HAS FINISHED INIT
-    BNE         @INITLOOP
+                MOVE.B      #01, D0             ;; SET COMMAND TO LOAD THE CORRESPONDING FILE
+                BSR         INIT_SUB            ;; EXECUTE SUB ROUTINE FOR INIT
 
-    MOVE.B      #01, D0             ;; SET COMMAND TO LOAD THE CORRESPONDING FILE
-    BSR         INIT_SUB            ;; EXECUTE SUB ROUTINE FOR INIT
+                MOVE.B      #02, D0             ;; REQUEST WORDWISE RAM FROM THE FILE
+                BSR         INIT_SUB
 
-    MOVE.B      #02, D0             ;; REQUEST WORDWISE RAM FROM THE FILE
-    BSR         INIT_SUB
-
-    JMP         $200000             ;; JUMP TO STACK START OFFSET
+                JMP         $200000	         ;; Ensure this address is correct
 
 ;---------------------------------------
 ;       INITIALISE THE SUBROUTINE 
-;
-;   THIS WORKS ON THE BASIS OF BEING
-;  ABLE TO TEST IF THE VALID 'SEGA' SPLASH
-;   ADDRESS IS PRESENT, IF SO, HALT THE SYSTEM
-;           AS IT PREPARES TO BOOT
 ;---------------------------------------
-
 
 INIT_SUB:
-    TST.B       $A1200F             
-    BNE         INIT_SUB
-    MOVE.B      #00, $A1200E
+            TST.B       $A1200F             
+            BNE         INIT_SUB
+            MOVE.B      #00, $A1200E
 
 ;---------------------------------------
-;       NOW WE WAIT AND TEST TO SEE
-;   IF THE RELEVANT SECURITY FILE WORKS
-;   IN TANDEM WITH THE VERSION BIOS
+;       WAIT AND TEST SECURITY
 ;---------------------------------------
 
 @WAITRESP:
@@ -75,7 +65,7 @@ INIT_SUB:
 
 @WAITRESP_2:
     TST.B       $A1200F
-    BEQ         @WAITRESP_2
+    BNE         @WAITRESP_2
 
 ASYNC_SUB: 
     TST.B       $A1200F
@@ -83,10 +73,7 @@ ASYNC_SUB:
     MOVE.B      #00, $A1200E
 
 ;---------------------------------------
-;   FINALLY, BOOT INTO THE RELEVANT 
-;   'SEGA' SPLASH ADDRESS AND SET THE 
-;    BRANCH OF THE SUBROUTINE 
-;       EQUAL TO THE RETURN TYPE
+;   FINALLY, BOOT INTO 'SEGA' SPLASH 
 ;---------------------------------------
 
 @WAITREADY:
@@ -94,5 +81,3 @@ ASYNC_SUB:
     BEQ         @WAITREADY
     MOVE.B      D0, $A1200E
     RTS
-
-
