@@ -9,7 +9,6 @@
 ;       SUCH AS GENERIC TMSS AND OTHER CHECKERS
 ;--------------------------------------------------------
 
-    INCLUDE "BIOS_inc.asm"
     INCLUDE "macros.asm"    
 
 ;--------------------------------------------------------
@@ -31,53 +30,12 @@ SECURITY_SEC:
      ALIGN   $600  ;; MATCHES THE REGION AFTER COMPILE TIME
 
 INIT_PROG:
-                BSET        #1, $A12003         ;; GIVE WORD TO SUB CPU
+                MOVE.L      #$C0000000, $C00004
+                MOVE.L      #64, D0
 
-@INITLOOP:
-                TST.B       $A1200F             ;; OFFSET TO DETERMINE IF THE SUB CPU HAS FINISHED INIT
-                BNE         @INITLOOP
+SET_PAL_LOOP:
+                MOVE.W      #$0F00, $C00000
+                DBF         D0, SET_PAL_LOOP   
 
-                MOVE.B      #01, D0             ;; SET COMMAND TO LOAD THE CORRESPONDING FILE
-                BSR         INIT_SUB            ;; EXECUTE SUB ROUTINE FOR INIT
-
-                MOVE.B      #02, D0             ;; REQUEST WORDWISE RAM FROM THE FILE
-                BSR         INIT_SUB
-
-                JMP         $200000	         ;; Ensure this address is correct
-
-;---------------------------------------
-;       INITIALISE THE SUBROUTINE 
-;---------------------------------------
-
-INIT_SUB:
-            TST.B       $A1200F             
-            BNE         INIT_SUB
-            MOVE.B      #00, $A1200E
-
-;---------------------------------------
-;       WAIT AND TEST SECURITY
-;---------------------------------------
-
-@WAITRESP:
-    TST.B       $A1200F
-    BEQ         @WAITRESP
-    MOVE.B      D0, $A1200E
-
-@WAITRESP_2:
-    TST.B       $A1200F
-    BNE         @WAITRESP_2
-
-ASYNC_SUB: 
-    TST.B       $A1200F
-    BNE         ASYNC_SUB
-    MOVE.B      #00, $A1200E
-
-;---------------------------------------
-;   FINALLY, BOOT INTO 'SEGA' SPLASH 
-;---------------------------------------
-
-@WAITREADY:
-    TST.B       $A1200F
-    BEQ         @WAITREADY
-    MOVE.B      D0, $A1200E
-    RTS
+INITLOOP:
+                BRA INITLOOP
